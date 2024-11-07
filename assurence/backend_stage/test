@@ -1,0 +1,154 @@
+<?php
+require_once 'connexion.php';
+
+$reponse = array();
+
+if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) && isset($_POST['phone']) && isset($_POST['assureur']) &&
+    isset($_POST['numcontrat']) && isset($_POST['motifselect']) && isset($_POST['motiftext']) && isset($_FILES['fileinputs'])) { // Notez le changement ici ($_FILES au lieu de $_POST)
+    
+    // Nettoyer les données provenant du formulaire
+    $nom = htmlspecialchars($_POST['nom']);
+    $prenom = htmlspecialchars($_POST['prenom']);
+    $email = htmlspecialchars($_POST['email']);
+    $phone = htmlspecialchars($_POST['phone']);
+    $assureur = htmlspecialchars($_POST['assureur']);
+    $numcontrat = htmlspecialchars($_POST['numcontrat']);
+    $motifselect = htmlspecialchars($_POST['motifselect']);
+    $motiftext = htmlspecialchars($_POST['motiftext']);
+    
+    // Chemin de destination pour le fichier téléchargé
+    $uploadDir = 'uploads/'; // Remplacez 'uploads/' par le répertoire de votre choix
+    $uploadFile = $uploadDir . basename($_FILES['fileinputs']['name']);
+
+    // Déplacez le fichier téléchargé vers le répertoire spécifié
+    if (move_uploaded_file($_FILES['fileinputs']['tmp_name'], $uploadFile)) {
+        // La mise à jour du chemin de fichier dans la base de données dépend de votre structure de base de données
+        $fileinputs = $uploadFile;
+        
+        // Requête préparée pour l'insertion
+        $requete = $con->prepare("INSERT INTO form_data (nom,prenom,email,phone,assureur,numcontrat,motiftext,motifselect,fileinputs) VALUES(?,?,?,?,?,?,?,?,?)");
+        $requete->bind_param('sssssssss', $nom, $prenom, $email, $phone, $assureur, $numcontrat, $motiftext, $motifselect, $fileinputs);
+        
+        if ($requete->execute()) {
+            $reponse['error'] = false;
+            $reponse['message'] = "Votre donnée a bien été enregistrée";
+            echo "Donnée ajoutée";
+        } else {
+            $reponse['error'] = true;
+            $reponse['message'] = "Erreur lors de l'insertion des données dans la base de données";
+        }
+    } else {
+        $reponse['error'] = true;
+        $reponse['message'] = "Erreur lors du téléchargement du fichier";
+    }
+} else {
+    $reponse['error'] = true;
+    $reponse['message'] = "Remplir tous les champs, y compris le fichier";
+}
+
+// Envoyer la réponse au format JSON
+echo json_encode($reponse);
+?>
+=========================================================
+<?php
+require_once 'connexion.php';
+$reponse = array();
+if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['email']) && isset($_POST['phone']) && isset($_POST['assureur']) &&
+    isset($_POST['numcontrat']) && isset($_POST['motifselect']) && isset($_POST['motiftext']) && isset($_POST['fileinputs'])) {
+    $nom = $_POST['nom'];
+    $prenom = $_POST['prenom'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $assureur = $_POST['assureur'];
+    $numcontrat = $_POST['numcontrat'];
+    $motifselect = $_POST['motifselect'];
+    $motiftext = $_POST['motiftext'];
+    $fileinputs = $_POST['fileinputs'];
+    $requete = $con->prepare("INSERT INTO form_data (nom,prenom,email,phone,assureur,numcontrat,
+    motiftext,motifselect,fileinputs) VALUES(?,?,?,?,?,?,?,?,?)");
+    $requete->bind_param('ssssssssb', $nom, $prenom, $email, $phone, $assureur, $numcontrat, $motiftext, $motifselect,$fileinputs);
+    
+    if ($requete->execute()) {
+        $reponse['error'] = false;
+        $reponse['message'] = "votre donner et bien enregistrer";
+        echo "donnee ajouter";
+    }
+} else {
+    echo "remplir tous les champs";
+}
+====================================================================
+KEY 
+if (isset($_POST['api_key'])) {
+    $api_key = $_POST['api_key'];
+
+    // Votre clé API secrète (à remplacer par votre propre clé)
+    $clé_api_secrete = "votre_clé_api_secrete";
+
+    // Vérifier si la clé API est valide
+    if ($api_key != $clé_api_secrete) {
+        $reponse['error'] = true;
+        $reponse['message'] = "Clé API invalide.";
+        echo json_encode($reponse);
+        exit; // Arrêter l'exécution du script en cas de clé API invalide
+    }
+} else {
+    $reponse['error'] = true;
+    $reponse['message'] = "Clé API manquante.";
+    echo json_encode($reponse);
+    exit; // Arrêter l'exécution du script en cas de clé API manquante
+}
+=================================================
+<?php
+
+require_once 'connexion.php';
+
+// Définir le type de contenu de la réponse en JSON
+header('Content-Type: application/json');
+
+$reponse = array();
+
+// Vérifier si la requête est de type POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Récupérer les données du corps de la requête
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    // Vérifier si les champs nécessaires sont présents
+    if (
+        isset($data['nom']) && isset($data['prenom']) && isset($data['email']) && isset($data['phone']) &&
+        isset($data['assureur']) && isset($data['numcontrat']) && isset($data['motifselect']) &&
+        isset($data['motiftext']) && isset($data['fileinputs'])
+    ) {
+        $nom = $data['nom'];
+        $prenom = $data['prenom'];
+        $email = $data['email'];
+        $phone = $data['phone'];
+        $assureur = $data['assureur'];
+        $numcontrat = $data['numcontrat'];
+        $motifselect = $data['motifselect'];
+        $motiftext = $data['motiftext'];
+        $fileinputs = $data['fileinputs'];
+
+        // Préparer la requête SQL
+        $requete = $con->prepare("INSERT INTO form_data (nom, prenom, email, phone, assureur, numcontrat, motiftext, motifselect, fileinputs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $requete->bind_param('ssssssss', $nom, $prenom, $email, $phone, $assureur, $numcontrat, $motiftext, $motifselect, $fileinputs);
+
+        // Exécuter la requête
+        if ($requete->execute()) {
+            $reponse['error'] = false;
+            $reponse['message'] = "Vos données ont été bien enregistrées";
+        } else {
+            $reponse['error'] = true;
+            $reponse['message'] = "Erreur lors de l'enregistrement des données";
+        }
+    } else {
+        $reponse['error'] = true;
+        $reponse['message'] = "Veuillez remplir tous les champs";
+    }
+} else {
+    $reponse['error'] = true;
+    $reponse['message'] = "Méthode non autorisée. Utilisez la méthode POST.";
+}
+
+// Afficher la réponse en format JSON
+echo json_encode($reponse);
+?>

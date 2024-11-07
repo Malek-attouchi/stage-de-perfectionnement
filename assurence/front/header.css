@@ -1,0 +1,48 @@
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 10%;
+    margin-top: 10px;
+    margin-right: 90%;
+  
+    width: 500px;
+  
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-title {
+    margin: 0;
+    font-size: 2rem;
+  }
+  
+  .header-contact-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-email {
+    margin-right: 1rem;
+    text-decoration: none;
+    color: #fff;
+  }
+  
+  .header-phone {
+    text-decoration: none;
+    color: #fff;
+  }
+  i {
+    margin-right: 8px; 
+      }
+i.fas.fa-phone {
+    margin-right: 5px; /* Marge à droite pour l'espacement */
+    color: #005ce6;      /* Couleur bleue pour l'icône de téléphone */
+      }
+i.fas.fa-envelope {
+    margin-right: 5px; /* Marge à droite pour l'espacement */
+    color: #005ce6;      /* Couleur bleue pour l'icône d'email */
+      }
